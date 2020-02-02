@@ -1,6 +1,5 @@
 package org.kryptonmlt.keybox.keyboxcli.shell;
 
-import javax.annotation.PostConstruct;
 import org.kryptonmlt.keybox.keyboxcli.dao.Server;
 import org.kryptonmlt.keybox.keyboxcli.utils.ChromeHelper;
 import org.kryptonmlt.keybox.keyboxcli.utils.KeyboxUtilities;
@@ -20,25 +19,25 @@ public class KeyboxCommands {
   @Autowired
   private ChromeHelper chromeHelper;
 
-  @PostConstruct
-  public void init() {
-    chromeHelper.init();
-    keyboxUtilities.login();
-    keyboxUtilities.extractInfoFromSystemsPage();
-  }
-
   @ShellMethod("Lists all servers from local cache")
-  public String list(@ShellOption({"-v", "--verbose"}) boolean verbose) {
+  public String list(@ShellOption({"-v", "--verbose"}) boolean verbose,
+      @ShellOption(defaultValue = "") String grep) {
+    if (serverCache.getServers().isEmpty()) {
+      keyboxUtilities.extractInfoFromSystemsPage();
+    }
     StringBuilder sB = new StringBuilder();
     for (Server server : serverCache.getServers()) {
-      sB.append(server.getName());
-      if (verbose) {
-        sB.append(" - ");
-        sB.append(server.getUsername());
-        sB.append("@");
-        sB.append(server.getIp());
+
+      if ((grep == null || grep.isEmpty()) || server.getName().contains(grep)) {
+        sB.append(server.getName());
+        if (verbose) {
+          sB.append(" - ");
+          sB.append(server.getUsername());
+          sB.append("@");
+          sB.append(server.getIp());
+        }
+        sB.append("\n");
       }
-      sB.append("\n");
     }
     return sB.toString();
   }

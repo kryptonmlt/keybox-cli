@@ -79,6 +79,9 @@ public class KeyboxUtilities {
         break;
       }
     }
+    WebDriverWait wait = new WebDriverWait(chromeHelper.getWebDriver(), 15);
+    wait.until(
+        ExpectedConditions.visibilityOfElementLocated(By.cssSelector("ul li .dropdown-menu")));
     // dropdown should now appear
     links = chromeHelper.getWebDriver().findElements(By.cssSelector(".dropdown-menu li a"));
     for (WebElement link : links) {
@@ -95,7 +98,7 @@ public class KeyboxUtilities {
     loginIfNeeded();
     goToSystemsPage();
     List<WebElement> rows = chromeHelper.getWebDriver()
-        .findElements(By.cssSelector(".container table tbody tr"));
+        .findElements(By.cssSelector(".container .floatThead-wrapper table tbody tr"));
     serverCache.clearServers();
     for (WebElement row : rows) {
       List<WebElement> columns = row.findElements(By.cssSelector("td"));
@@ -128,9 +131,14 @@ public class KeyboxUtilities {
 
   private void loginIfNeeded() {
     LOGGER.info("Checking if login is needed");
-    chromeHelper.getWebDriver().get(chromeHelper.getWebDriver().getCurrentUrl());
-    if (chromeHelper.getWebDriver().getTitle().contains("Login")) {
+    if (chromeHelper.getWebDriver().getCurrentUrl() == null || !chromeHelper.getWebDriver()
+        .getCurrentUrl().contains(keyboxUrl)) {
       this.login();
+    } else {
+      chromeHelper.getWebDriver().get(chromeHelper.getWebDriver().getCurrentUrl());
+      if (chromeHelper.getWebDriver().getTitle().contains("Login")) {
+        this.login();
+      }
     }
   }
 

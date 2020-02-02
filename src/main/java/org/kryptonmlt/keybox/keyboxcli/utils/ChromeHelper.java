@@ -54,8 +54,10 @@ public class ChromeHelper {
     try {
       webDriver.close();
       webDriver.quit();
+      webDriver = null;
     } catch (Exception e) {
       LOGGER.error("Error closing webdriver", e);
+      webDriver = null;
     }
   }
 
@@ -64,6 +66,9 @@ public class ChromeHelper {
   }
 
   public WebDriver getWebDriver() {
+    if (webDriver == null) {
+      webDriver = this.init();
+    }
     return webDriver;
   }
 }
