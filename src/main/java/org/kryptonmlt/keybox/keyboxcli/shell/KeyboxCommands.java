@@ -54,6 +54,8 @@ public class KeyboxCommands {
           sB.append(server.getUsername());
           sB.append("@");
           sB.append(server.getIp());
+          sB.append(":");
+          sB.append(server.getPort());
         }
         sB.append("\n");
       }
