@@ -1,7 +1,7 @@
 package org.kryptonmlt.keybox.keyboxcli.utils;
 
 import java.io.File;
-import java.net.URL;
+import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -21,6 +21,9 @@ public class ChromeHelper {
 
   @Value("${browser.headless}")
   private boolean headless;
+
+  @Value("${browser.driver.folder}")
+  private String driverFolder;
 
   public WebDriver init() {
     LOGGER.info("Initializing webdriver");
@@ -44,13 +47,22 @@ public class ChromeHelper {
   }
 
   private String getLocalDriver() {
-    ClassLoader classLoader = getClass().getClassLoader();
-    URL url = classLoader.getResource("chromedriver.exe");
-    return url.getFile();
+    String path = driverFolder;
+    if (SystemUtils.IS_OS_WINDOWS) {
+      path = driverFolder + "\\chromedriver.exe";
+    } else if (SystemUtils.IS_OS_MAC) {
+      path = driverFolder + "/chromedriver-mac";
+    } else {
+      path = driverFolder + "/chromedriver-linux";
+    }
+    return path;
   }
 
   public void exit(WebDriver webDriver) {
     LOGGER.info("Closing webdriver");
+    if (webDriver == null) {
+      return;
+    }
     try {
       webDriver.close();
       webDriver.quit();

@@ -10,8 +10,8 @@ public class ServerCache {
 
   private HashMap<String, Server> servers = new HashMap<>();
 
-  public void addServer(String name, String username, String ip, String status) {
-    servers.put(name, new Server(name, username, ip, status));
+  public void addServer(String name, String username, String ip, String port, String status) {
+    servers.put(name, new Server(name, username, ip, port, status));
   }
 
   public void clearServers() {

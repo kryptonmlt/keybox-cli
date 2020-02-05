@@ -12,5 +12,6 @@ public class Server {
   private String name;
   private String username;
   private String ip;
+  private String port;
   private String status;
 }

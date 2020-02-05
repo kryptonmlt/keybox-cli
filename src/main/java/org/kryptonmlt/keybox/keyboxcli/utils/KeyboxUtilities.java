@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.List;
+import org.kryptonmlt.keybox.keyboxcli.dao.Server;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -91,6 +92,11 @@ public class KeyboxUtilities {
       }
     }
     LOGGER.info("Now in Systems page");
+    try {
+      Thread.sleep(500l);
+    } catch (InterruptedException e) {
+      LOGGER.error("Error waiting", e);
+    }
   }
 
   public void extractInfoFromSystemsPage() {
@@ -102,30 +108,59 @@ public class KeyboxUtilities {
     serverCache.clearServers();
     for (WebElement row : rows) {
       List<WebElement> columns = row.findElements(By.cssSelector("td"));
-      serverCache
-          .addServer(columns.get(0).getText(), columns.get(1).getText(), columns.get(2).getText(),
-              columns.get(3).getText());
+      String[] ipPort = columns.get(2).getText().split(":");
+      try {
+        serverCache
+            .addServer(columns.get(0).getText(), columns.get(1).getText(), ipPort[0], ipPort[1],
+                columns.get(3).getText());
+      } catch (Exception e) {
+        StringBuilder sB = new StringBuilder();
+        for (WebElement col : columns) {
+          sB.append(col.getText() + " ");
+        }
+        LOGGER.error("error creating cache on row:" + sB.toString(), e);
+      }
     }
     LOGGER.info("Finished extracting Servers");
   }
 
   public void addServer(String name, String username, String ip, String port) {
+    for (Server server : serverCache.getServers()) {
+      if (server.getIp().equalsIgnoreCase(ip) && server.getPort().equalsIgnoreCase(port) && server
+          .getUsername().equalsIgnoreCase(username)) {
+        LOGGER.info("There already exists server: " + server.getName()
+            + " with same properties so will not add: " + name);
+        return;
+      }
+    }
     LOGGER.info("Adding a server ..");
     loginIfNeeded();
+    goToSystemsPage();
     chromeHelper.getWebDriver()
-        .findElement(By.cssSelector(".container .btn .btn-default .add_btn .spacer .spacer-bottom"))
+        .findElement(By.cssSelector(".spacer-bottom"))
         .click();
     WebDriverWait wait = new WebDriverWait(chromeHelper.getWebDriver(), 15);
-    wait.until(
-        ExpectedConditions.textToBePresentInElementValue(By.cssSelector("h4"), "Add System"));
+    try {
+      Thread.sleep(1000l);
+    } catch (InterruptedException e) {
+      LOGGER.error("Error waiting", e);
+    }
     chromeHelper.getWebDriver().findElement(By.id("saveSystem_hostSystem_displayNm"))
         .sendKeys(name);
+    chromeHelper.getWebDriver().findElement(By.id("saveSystem_hostSystem_user")).clear();
     chromeHelper.getWebDriver().findElement(By.id("saveSystem_hostSystem_user")).sendKeys(username);
+    chromeHelper.getWebDriver().findElement(By.id("saveSystem_hostSystem_host")).clear();
     chromeHelper.getWebDriver().findElement(By.id("saveSystem_hostSystem_host")).sendKeys(ip);
+    chromeHelper.getWebDriver().findElement(By.id("saveSystem_hostSystem_port")).clear();
     chromeHelper.getWebDriver().findElement(By.id("saveSystem_hostSystem_port")).sendKeys(port);
 
     chromeHelper.getWebDriver()
-        .findElement(By.cssSelector(".modal-dialog .btn .btn-default .submit_btn"));
+        .findElement(By.cssSelector("#add_dialog .submit_btn")).click();
+    try {
+      Thread.sleep(500l);
+    } catch (InterruptedException e) {
+      LOGGER.error("Error waiting", e);
+    }
     LOGGER.info("Added server with name: " + name);
   }
 
