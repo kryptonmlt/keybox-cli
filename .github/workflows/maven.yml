@@ -21,7 +21,7 @@ jobs:
         run: |
           mvn clean install
           mv DIST keybox-cli
-          cp target/keybox-cli-0.0.1-SNAPSHOT keybox-cli/keybox-cli-0.0.1-SNAPSHOT
+          cp target/keybox-cli-0.0.1-SNAPSHOT.jar keybox-cli/keybox-cli-0.0.1-SNAPSHOT.jar
           zip -R keybox-cli.zip keybox-cli/
       - name: Create Release
         id: create_release
