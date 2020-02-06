@@ -2,8 +2,7 @@
 CLI / Terminal mode for keybox (ssh manager) - https://github.com/signedbytes/KeyBox
 
 ## Latest Release
-* All releases are found here: https://github.com/kryptonmlt/keybox-cli/releases
-* Latest one being: 
+* Download latest release from here: https://github.com/kryptonmlt/keybox-cli/releases
 
 ## How to Run
 * Once latest release is downloaded, fill up the application.properties file as needed
@@ -21,6 +20,3 @@ CLI / Terminal mode for keybox (ssh manager) - https://github.com/signedbytes/Ke
   * generate ansible inventory file
 * add -I ip -N name -U user -P port
   * adds a server to keybox
-
-## Build Local
-* mvn clean install
