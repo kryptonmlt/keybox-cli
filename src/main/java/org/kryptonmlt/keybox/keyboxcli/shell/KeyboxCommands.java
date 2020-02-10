@@ -106,11 +106,11 @@ public class KeyboxCommands {
       sB.append(name);
       sB.append("]\n");
       for (Server server : subServers) {
-        sB.append(server.getName());
-        sB.append(" ansible_port=");
-        sB.append(server.getPort());
+        sB.append(server.getName().trim().replace(" ", ""));
         sB.append(" ansible_host=");
         sB.append(server.getIp());
+        sB.append(" ansible_port=");
+        sB.append(server.getPort());
         sB.append("\n");
       }
       sB.append("\n");
